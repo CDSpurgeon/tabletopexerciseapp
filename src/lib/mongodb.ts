@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Mongoose } from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI!;
 
@@ -14,7 +14,7 @@ if (!MONGODB_URI) {
 
 declare global {
   // eslint-disable-next-line no-var
-  var mongoose: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null };
+  var mongoose: { conn: Mongoose | null; promise: Promise<Mongoose> | null } | undefined;
 }
 
 let cached = global.mongoose;
@@ -23,29 +23,32 @@ if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };
 }
 
+// Re-assign to ensure TypeScript knows it's not undefined
+const mongooseCached = cached!;
+
 async function connectToDatabase() {
-  if (cached.conn) {
-    return cached.conn;
+  if (mongooseCached.conn) {
+    return mongooseCached.conn;
   }
 
-  if (!cached.promise) {
+  if (!mongooseCached.promise) {
     const opts = {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    mongooseCached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
       return mongoose;
     });
   }
   
   try {
-    cached.conn = await cached.promise;
+    mongooseCached.conn = await mongooseCached.promise;
   } catch (e) {
-    cached.promise = null;
+    mongooseCached.promise = null;
     throw e;
   }
 
-  return cached.conn;
+  return mongooseCached.conn;
 }
 
 export default connectToDatabase;
