@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-brand-navy: #1B2A4A;
+  --color-brand-orange: #F97316;
+  --color-brand-light: #F8F9FB;
+  --color-brand-border: #E2E8F0;
+  --color-brand-text: #1E293B;
+  --color-brand-muted: #64748B;
+  
+  --color-background: var(--color-brand-light);
+  --color-foreground: var(--color-brand-text);
+
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
